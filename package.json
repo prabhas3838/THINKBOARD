@@ -1,4 +1,11 @@
 {
+  "name": "thinkboard-root",
+  "private": true,
+  "scripts": {
+    "server": "npm --prefix backend run dev",
+    "client": "npm --prefix frontend run dev",
+    "dev": "npm run server & npm run client"
+  },
   "dependencies": {
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.9"

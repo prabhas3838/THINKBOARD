@@ -1,13 +1,24 @@
 import express from "express";
-// Note the relative path: from src/routes -> go up one level to src -> controller
-import { createnote, getallnotes, updatenote, deletenote, getnotebyid } from "../controller/notescontroller.js";
+import {
+  createnote,
+  getallnotes,
+  updatenote,
+  deletenote,
+  getnotebyid,
+  togglepinnote,
+} from "../controller/notescontroller.js";
+import { protectRoute } from "../middlewere/auth.js";
 
 const router = express.Router();
 
-// GET → fetch notes
+// All notes routes are protected and require a valid user token
+router.use(protectRoute);
+
+// GET → fetch notes (supports ?search=...&tag=...)
 router.get("/", getallnotes);
 
-router.get("/:id",getnotebyid);
+// GET → fetch single note
+router.get("/:id", getnotebyid);
 
 // POST → create note
 router.post("/", createnote);
@@ -17,5 +28,8 @@ router.put("/:id", updatenote);
 
 // DELETE → delete note
 router.delete("/:id", deletenote);
+
+// PATCH → toggle pin
+router.patch("/:id/pin", togglepinnote);
 
 export default router;

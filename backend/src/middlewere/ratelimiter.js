@@ -2,14 +2,16 @@ import ratelimit from "../config/upstash.js";
 
 const ratelimiter = async (req, res, next) => {
   try {
-    const { success } = await ratelimit.limit("mylimit"); // FIXED SPELLING
-    if (!success) {                                        // FIXED SPELLING
-      return res.status(429).json({ message: "too many requests" });
+    const clientIdentifier = req.ip || req.headers["x-forwarded-for"] || "anonymous";
+    const { success } = await ratelimit.limit(`limit_${clientIdentifier}`);
+    if (!success) {
+      return res.status(429).json({ message: "Too many requests. Please slow down." });
     }
     next();
   } catch (error) {
-    console.log("rate limit error");
-    next(error);
+    // If rate limiter fails (e.g. network/service issue), don't block user requests
+    console.log("Rate limit warning/error:", error.message || error);
+    next();
   }
 };
 
